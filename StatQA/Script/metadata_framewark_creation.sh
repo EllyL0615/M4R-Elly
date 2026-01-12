@@ -1,4 +1,4 @@
-cd ..
+# cd ..
 
 echo "metadata framewark creation starts..."
 python Construction/metadata_helper.py

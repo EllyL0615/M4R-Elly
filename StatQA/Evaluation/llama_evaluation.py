@@ -23,17 +23,17 @@ def llama_answer_generation(model_type: str, dataset_name: str, output_name: str
     
     # Path settings
     if model_type == '2_7b':
-        model_path = "/your_path_to/Llama-2-7b-chat-hf"
-        parallel_num = 4
+        model_path = "/rds/general/user/yl9422/home/files/models/Llama-2-7b-chat-hf"
+        parallel_num = 1
     elif model_type == '2_13b':
-        model_path = "/your_path_to/Llama-2-13b-chat-hf"
-        parallel_num = 8
+        model_path = "/rds/general/user/yl9422/home/files/models/Llama-2-13b-chat-hf"
+        parallel_num = 1
     elif model_type == '3_8b_instruct':
-        model_path = "/your_path_to/Meta-Llama-3-8B-Instruct"
-        parallel_num = 8
+        model_path = "/rds/general/user/yl9422/home/files/models/Meta-Llama-3-8B-Instruct"
+        parallel_num = 1
     elif model_type == '3_8b':
-        model_path = "/your_path_to/Meta-Llama-3-8B"
-        parallel_num = 8
+        model_path = "/rds/general/user/yl9422/home/files/models/Meta-Llama-3-8B"
+        parallel_num = 1
     else:
         raise ValueError("[!] Invalid model type. Please choose from: 2_7b, 2_13b, 3_8b_instruct and 3_8b")
     
