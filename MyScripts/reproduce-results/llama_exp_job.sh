@@ -4,10 +4,12 @@
 #PBS -N llama2_7b_job
 #PBS -o /rds/general/user/yl9422/home/files
 #PBS -e /rds/general/user/yl9422/home/files
+#PBS -M yl9422@ic.ac.uk
+#PBS -m abe
 
-cd /rds/general/user/yl9422/home/files/M4R-Elly/StatQA
+cd /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/Script
 
 eval "$(~/miniforge3/bin/conda shell.bash hook)"
 conda activate M4R
 
-sh Script/llama_exp.sh
+sh llama_exp.sh

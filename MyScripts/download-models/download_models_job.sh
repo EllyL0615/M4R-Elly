@@ -4,6 +4,8 @@
 #PBS -N download_llama_models
 #PBS -o /rds/general/user/yl9422/home/files
 #PBS -e /rds/general/user/yl9422/home/files
+#PBS -M yl9422@ic.ac.uk
+#PBS -m abe
 
 cd /rds/general/user/yl9422/home/files/models
 
