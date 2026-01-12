@@ -1,4 +1,4 @@
-# cd ..
+cd ..
 echo "[i] Generate and organize prompts."
 sleep 5s
 

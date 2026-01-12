@@ -1,4 +1,4 @@
-# cd ..
+cd ..
 
 wait
 python analyze_model_answer.py

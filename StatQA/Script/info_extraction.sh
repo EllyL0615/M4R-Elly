@@ -1,4 +1,4 @@
-# cd ..
+cd ..
 
 wait
 echo "datasets preprocess starts..."

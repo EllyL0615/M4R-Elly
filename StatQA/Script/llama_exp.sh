@@ -1,4 +1,4 @@
-# cd ..
+cd ..
 echo "[i] LLaMA-2/3 experiments. The program may take a long time to run, so please be patient."
 sleep 5s
 

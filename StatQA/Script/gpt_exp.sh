@@ -1,4 +1,4 @@
-# cd ..
+cd ..
 echo "[i] GPT experiments."
 sleep 5s
 

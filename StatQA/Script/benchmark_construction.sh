@@ -1,4 +1,4 @@
-# cd ..
+cd ..
 
 echo "[i] The program may take a long time to run, and will consume API tokens, so please be patient or directly use dataset we provide."
 sleep 5s
