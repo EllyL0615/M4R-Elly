@@ -25,7 +25,8 @@ send_discord_notif() {
 - **Job Name:** \`${JOB_NAME}\`
 - **Job ID:** \`${JOB_ID}\`
 - **Status:** **${STATUS}**
-- **Time:** ${TIME}"
+- **Time:** ${TIME}
+\u200b" # Discord will auto-delete empty lines so ...
 
     python - << EOF
 import requests
