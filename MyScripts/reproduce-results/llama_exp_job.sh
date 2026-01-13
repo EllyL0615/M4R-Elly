@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:ngpus=1:mem=64gb
-#PBS -l walltime=08:00:00
+#PBS -l walltime=10:00:00
 #PBS -N llama2_7b_job
 #PBS -o /rds/general/user/yl9422/home/files
 #PBS -e /rds/general/user/yl9422/home/files
