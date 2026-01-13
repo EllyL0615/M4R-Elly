@@ -1,6 +1,6 @@
 # CX3 & Batch Job
 
-## Start Up
+Start Up
 
 1. Connect to Zacalar / Imperial-WPA
 
@@ -86,7 +86,7 @@
    (M4R) [elly]$ 
    ```
 
-## Shell Commands
+### Shell Commands
 
 paths
 
@@ -99,7 +99,7 @@ $ cd ../..	# go to grandparent dir
 $ cd -		# go to previous dir
 ```
 
-## Package requitements
+### Package requitements
 
 - Python
 - ipykernel
@@ -107,7 +107,7 @@ $ cd -		# go to previous dir
 - requirements.txt in StatQA repo
 - ...
 
-## Resources Requests
+### Resources Requests
 
 | Scenario                        | Recommended Requests                |
 | :------------------------------ | :---------------------------------- |
@@ -118,13 +118,19 @@ $ cd -		# go to previous dir
 
 
 
+
+
+
+
 # Reproducing Results
 
-## Download Models (Only Once)
+### Add New Models
 
-[Hugging Face token](https://huggingface.co/settings/tokens)
+##### I. Download Models
 
-Model Folder: /rds/general/user/yl9422/home/files/models
+- [Hugging Face token](https://huggingface.co/settings/tokens)
+
+- Model Folder: /rds/general/user/yl9422/home/files/models
 
 | Model               | Open/Closed source | Desc  |
 | ------------------- | ------------------ | ----- |
@@ -146,7 +152,7 @@ Model Folder: /rds/general/user/yl9422/home/files/models
    qstat -u yl9422
    ```
 
-#### Edit Model Paths
+##### II. Edit Model Paths
 
 1. find file `StatQA/Evaluation/llama_evaluation.py`
 
@@ -160,7 +166,7 @@ Model Folder: /rds/general/user/yl9422/home/files/models
        parallel_num = 1    # we only have 1 GPU
    ```
 
-## Prompt Organisation 
+### Prompt Organisation 
 
 (Only Once unless you change the prompt)
 
@@ -177,7 +183,7 @@ OUTPUT: 5 files
 
 - `StatQA/Data/Integrated Dataset/Dataset with Prompt/Test Set/` except for zero-shot-CoT
 
-## Evaluation
+### Evaluation
 
 1. edit file `StatQA/Script/llama_exp.sh`
 
@@ -192,7 +198,7 @@ OUTPUT: 5 files per model
 
 - `StatQA/Model Answer/Origin Answer/`
 
-## Analysis
+### Analysis
 
 ```bash
 cd /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/Script
