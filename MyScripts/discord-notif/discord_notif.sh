@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Usage: 
+# 0. Only works on PBS jobs executed by qsub command, on computing nodes
 # 1. save Discord channel URL to bashrc (One-time)
 #     $ echo 'export DISCORD_WEBHOOK_URL="https://discordapp.com/api/webhooks/xxx/yyy"' >> ~/.bashrc
 # 2. source AFTER conda activation in PBS scripts
