@@ -122,7 +122,7 @@ $ cd -		# go to previous dir
 
 
 
-# Reproducing Results
+# Producing Results
 
 ### Add New Models
 
@@ -166,9 +166,7 @@ $ cd -		# go to previous dir
        parallel_num = 1    # we only have 1 GPU
    ```
 
-### Prompt Organisation 
-
-(Only Once unless you change the prompt)
+### Prompt Organisation (Do not run this for reproduction)
 
 ```bash
 cd /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/Script
