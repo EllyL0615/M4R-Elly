@@ -4,12 +4,11 @@
 #PBS -N download_llama_models
 #PBS -o /rds/general/user/yl9422/home/files
 #PBS -e /rds/general/user/yl9422/home/files
-#PBS -M yl9422@ic.ac.uk
-#PBS -m abe
+eval "$(~/miniforge3/bin/conda shell.bash hook)"
+conda activate M4R
+source ~/.bashrc
+source /rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/discord-notif/discord_notif.sh
 
 cd /rds/general/user/yl9422/home/files/models
 
-eval "$(~/miniforge3/bin/conda shell.bash hook)"
-conda activate M4R
-
-./download_models.sh
+sh download_models.sh

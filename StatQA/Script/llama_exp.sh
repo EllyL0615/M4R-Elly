@@ -2,7 +2,7 @@ cd ..
 echo "[i] LLaMA-2/3 experiments. The program may take a long time to run, so please be patient."
 sleep 5s
 
-# # llama-2-7b
+# llama-2-7b
 wait
 python Evaluation/llama_evaluation.py --model_type "2_7b" --dataset_name "mini-StatQA" --trick "zero-shot"
 # 10min
@@ -69,4 +69,4 @@ python Evaluation/llama_evaluation.py --model_type "3_8b" --dataset_name "mini-S
 wait
 python Evaluation/llama_evaluation.py --model_type "3_8b" --dataset_name "mini-StatQA" --trick "stats-prompt"
 
-# Total time: 03:37:52
+# total: ~9 hours

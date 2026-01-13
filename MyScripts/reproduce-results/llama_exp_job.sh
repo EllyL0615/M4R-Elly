@@ -7,9 +7,11 @@
 #PBS -M yl9422@ic.ac.uk
 #PBS -m abe
 
-cd /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/Script
-
 eval "$(~/miniforge3/bin/conda shell.bash hook)"
 conda activate M4R
+source ~/.bashrc
+source /rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/discord-notif/discord_notif.sh
+
+cd /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/Script
 
 sh llama_exp.sh
