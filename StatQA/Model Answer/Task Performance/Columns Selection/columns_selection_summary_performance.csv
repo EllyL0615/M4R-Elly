@@ -1,0 +1,17 @@
+model,overall_score_rate,Correlation Analysis,Contingency Table Test,Distribution Compliance Test,Variance Test,Descriptive Statistics
+columns-llama3_8b_instruct_one-shot,0.83147,0.80357,0.83203,0.88559,0.71311,0.9112
+columns-llama2_13b_one-shot,0.60361,0.39881,0.54297,0.69492,0.52459,0.78764
+columns-llama2_13b_one-shot-CoT,0.63801,0.48214,0.53125,0.75847,0.57787,0.79151
+columns-llama2_13b_zero-shot,0.39295,0.36905,0.16016,0.50847,0.36885,0.55598
+columns-llama3_8b_one-shot-CoT,0.58641,0.57143,0.62891,0.58475,0.34836,0.77992
+columns-llama2_13b_zero-shot-CoT,0.43164,0.3869,0.22266,0.52542,0.39344,0.61776
+columns-llama3_8b_one-shot,0.87016,0.76786,0.82812,0.91525,0.88115,0.92664
+columns-llama3_8b_zero-shot,0.79622,0.67857,0.77734,0.80508,0.78689,0.89189
+columns-llama2_7b_zero-shot,0.31298,0.25,0.26172,0.31356,0.33197,0.3861
+columns-llama2_7b_one-shot-CoT,0.43078,0.27976,0.38281,0.39407,0.52869,0.51737
+columns-llama3_8b_instruct_zero-shot-CoT,0.72227,0.67262,0.79297,0.69068,0.65984,0.7722
+columns-llama3_8b_instruct_one-shot-CoT,0.83147,0.77381,0.81641,0.83898,0.77869,0.92664
+columns-llama2_7b_zero-shot-CoT,0.26999,0.22619,0.21094,0.27966,0.31557,0.30502
+columns-llama3_8b_instruct_zero-shot,0.71625,0.71429,0.76953,0.66525,0.62295,0.79923
+columns-llama3_8b_zero-shot-CoT,0.61737,0.58333,0.6875,0.54661,0.57377,0.67568
+columns-llama2_7b_one-shot,0.44626,0.35119,0.42578,0.42797,0.4959,0.49807

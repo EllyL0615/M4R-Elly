@@ -1,0 +1,17 @@
+model,overall_score_rate,Correlation Analysis,Contingency Table Test,Distribution Compliance Test,Variance Test,Descriptive Statistics
+methods-llama2_13b_one-shot,0.27601,0.30952,0.10156,0.13983,0.10656,0.71042
+methods-llama3_8b_instruct_zero-shot,0.11436,0.09524,0.11719,0.08051,0.0041,0.25869
+methods-llama3_8b_instruct_one-shot,0.31814,0.2381,0.14062,0.15254,0.19262,0.81467
+methods-llama2_7b_one-shot-CoT,0.27171,0.07738,0.11719,0.11864,0.37705,0.59073
+methods-llama3_8b_instruct_zero-shot-CoT,0.13414,0.18452,0.14453,0.11441,0.0123,0.22394
+methods-llama2_7b_one-shot,0.25795,0.07143,0.11328,0.10593,0.34016,0.58301
+methods-llama2_13b_zero-shot,0.16595,0.10714,0.01953,0.16102,0.07787,0.43629
+methods-llama3_8b_instruct_one-shot-CoT,0.3362,0.35714,0.18359,0.1822,0.15164,0.78764
+methods-llama2_13b_zero-shot-CoT,0.15735,0.10119,0.03906,0.13983,0.08607,0.39382
+methods-llama3_8b_one-shot-CoT,0.29149,0.24405,0.17969,0.14407,0.09426,0.7529
+methods-llama2_7b_zero-shot-CoT,0.18745,0.04762,0.01562,0.05932,0.32787,0.43243
+methods-llama2_13b_one-shot-CoT,0.27601,0.31548,0.13672,0.13983,0.06557,0.71042
+methods-llama3_8b_zero-shot-CoT,0.24936,0.03571,0.13281,0.15254,0.17213,0.66409
+methods-llama2_7b_zero-shot,0.17713,0.04762,0.02344,0.03814,0.27049,0.45174
+methods-llama3_8b_zero-shot,0.28375,0.02381,0.00391,0.1822,0.28689,0.81853
+methods-llama3_8b_one-shot,0.3534,0.22024,0.10156,0.22458,0.27459,0.88031
