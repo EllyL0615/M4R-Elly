@@ -9,6 +9,6 @@ conda activate M4R
 source ~/.bashrc
 source /rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/discord-notif/discord_notif.sh
 
-cd /rds/general/user/yl9422/home/files/models
+cd /rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/download-models
 
-sh download_models.sh
+bash download_models.sh # some commands in the script cannot be run by sh

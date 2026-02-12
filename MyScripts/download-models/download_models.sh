@@ -7,6 +7,8 @@ MODELS=(
     # "meta-llama/Llama-2-13b-chat-hf"    # in the Paper
     # "meta-llama/Meta-Llama-3-8B"    # in the Paper
     # "meta-llama/Meta-Llama-3-8B-Instruct"    # in the Paper
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
+    "deepseek-ai/DeepSeek-Prover-V1.5-RL"
 )
 
 for MODEL in "${MODELS[@]}"; do
