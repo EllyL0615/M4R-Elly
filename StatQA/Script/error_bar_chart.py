@@ -34,7 +34,7 @@ def group_model(model):
     if 'llama2_7b' in model: return 'llama2_7b'
     if 'llama3_8b_instruct' in model: return 'llama3_8b_instruct'  # Check first!
     if 'llama3_8b' in model: return 'llama3_8b'
-    if 'llamadeepseek' in model: return 'llamadeepseek'
+    if 'deepseek' in model: return 'deepseek'
     return 'Other'
 
 # Add Group column
@@ -91,7 +91,7 @@ for group in groups_order:
 # Customize axes
 ax.set_xticks(x_pos)
 # Shorten model names for x-axis
-short_labels = [m.replace('llama2_', '').replace('llama3_', '').replace('llamadeepseek', 'deepseek').replace('instruct_', 'inst_') for m in df_errors['Model']]
+short_labels = [m.replace('llama2_', '').replace('llama3_', '').replace('deepseek', 'deepseek').replace('instruct_', 'inst_') for m in df_errors['Model']]
 ax.set_xticklabels(short_labels, fontsize=10, rotation=45, ha='right')
 
 ax.set_ylabel('Error Rate', fontsize=16, fontweight='bold')
