@@ -110,7 +110,7 @@ def plot_radar_chart_from_summary(csv_file_path: str, output_name: str, custom_c
 
     # Save the figure
     plt.tight_layout()
-    plt.savefig(f"Chart\Radar Chart\{output_name} radar chart.pdf", format='pdf', bbox_inches='tight', dpi=300)
+    plt.savefig(f"Chart/Radar Chart/{output_name} radar chart.pdf", format='pdf', bbox_inches='tight', dpi=300)
     print(f"[+] Radar charts saved as {output_name}_radar_charts.pdf")
 
 
@@ -126,4 +126,4 @@ if __name__ == '__main__':
                      '#fdcb6e', 
                      '#eb6a82'] 
     subtitle_list = ["(a) LLaMA-2/3", "(b) GPT Models", "(c) Best in Each Section"]
-    plot_radar_chart_from_summary('Model Answer\Task Performance\Selected Performance\selected_overall.csv', 'Leading model overall', custom_colors, titles=subtitle_list)
+    plot_radar_chart_from_summary('Model Answer/Task Performance/Selected Performance/selected_overall.csv', 'Leading model overall', custom_colors, titles=subtitle_list)
