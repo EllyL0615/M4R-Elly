@@ -467,10 +467,10 @@ if __name__ == "__main__":
     model_answer_integrate_analysis(answer_file_name='llama3_8b_instruct_stats-prompt')
     model_answer_integrate_analysis(answer_file_name='llama3_8b_stats-prompt')
 
-    # model_answer_integrate_analysis(answer_file_name='llamadeepseek_zero-shot')
-    # model_answer_integrate_analysis(answer_file_name='llamadeepseek_zero-shot-CoT')
-    # model_answer_integrate_analysis(answer_file_name='llamadeepseek_one-shot')
-    # model_answer_integrate_analysis(answer_file_name='llamadeepseek_one-shot-CoT')
-    # model_answer_integrate_analysis(answer_file_name='llamadeepseek_stats-prompt')
+    model_answer_integrate_analysis(answer_file_name='llamadeepseek_zero-shot')
+    model_answer_integrate_analysis(answer_file_name='llamadeepseek_zero-shot-CoT')
+    model_answer_integrate_analysis(answer_file_name='llamadeepseek_one-shot')
+    model_answer_integrate_analysis(answer_file_name='llamadeepseek_one-shot-CoT')
+    model_answer_integrate_analysis(answer_file_name='llamadeepseek_stats-prompt')
 
     pass

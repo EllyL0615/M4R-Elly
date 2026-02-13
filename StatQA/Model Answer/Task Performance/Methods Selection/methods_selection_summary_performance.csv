@@ -1,10 +1,12 @@
 model,overall_score_rate,Correlation Analysis,Contingency Table Test,Distribution Compliance Test,Variance Test,Descriptive Statistics
+methods-llamadeepseek_one-shot,0.32932,0.27381,0.34375,0.25847,0.07787,0.65251
 methods-llama2_13b_one-shot,0.27601,0.30952,0.10156,0.13983,0.10656,0.71042
 methods-llama3_8b_stats-prompt,0.40069,0.32738,0.23828,0.32627,0.18443,0.88031
 methods-llama3_8b_instruct_zero-shot,0.11436,0.09524,0.11719,0.08051,0.0041,0.25869
 methods-llama2_13b_stats-prompt,0.30868,0.32143,0.17578,0.20339,0.20082,0.62934
 methods-llama3_8b_instruct_one-shot,0.31814,0.2381,0.14062,0.15254,0.19262,0.81467
 methods-llama2_7b_one-shot-CoT,0.27171,0.07738,0.11719,0.11864,0.37705,0.59073
+methods-llamadeepseek_one-shot-CoT,0.34222,0.31548,0.30859,0.25424,0.18443,0.62162
 methods-llama3_8b_instruct_zero-shot-CoT,0.13414,0.18452,0.14453,0.11441,0.0123,0.22394
 methods-llama2_7b_one-shot,0.25795,0.07143,0.11328,0.10593,0.34016,0.58301
 methods-llama2_13b_zero-shot,0.16595,0.10714,0.01953,0.16102,0.07787,0.43629
@@ -12,10 +14,13 @@ methods-llama3_8b_instruct_one-shot-CoT,0.3362,0.35714,0.18359,0.1822,0.15164,0.
 methods-llama2_13b_zero-shot-CoT,0.15735,0.10119,0.03906,0.13983,0.08607,0.39382
 methods-llama3_8b_one-shot-CoT,0.29149,0.24405,0.17969,0.14407,0.09426,0.7529
 methods-llama2_7b_zero-shot-CoT,0.18745,0.04762,0.01562,0.05932,0.32787,0.43243
+methods-llamadeepseek_zero-shot,0.23646,0.23214,0.22266,0.29237,0.0,0.42471
+methods-llamadeepseek_zero-shot-CoT,0.29321,0.20833,0.23828,0.27119,0.09836,0.60618
 methods-llama2_7b_stats-prompt,0.28289,0.06548,0.20312,0.15678,0.32377,0.57915
 methods-llama2_13b_one-shot-CoT,0.27601,0.31548,0.13672,0.13983,0.06557,0.71042
 methods-llama3_8b_zero-shot-CoT,0.24936,0.03571,0.13281,0.15254,0.17213,0.66409
 methods-llama3_8b_instruct_stats-prompt,0.31556,0.23214,0.21875,0.24153,0.15164,0.68726
 methods-llama2_7b_zero-shot,0.17713,0.04762,0.02344,0.03814,0.27049,0.45174
+methods-llamadeepseek_stats-prompt,0.41273,0.40476,0.44531,0.33898,0.22541,0.62934
 methods-llama3_8b_zero-shot,0.28375,0.02381,0.00391,0.1822,0.28689,0.81853
 methods-llama3_8b_one-shot,0.3534,0.22024,0.10156,0.22458,0.27459,0.88031
