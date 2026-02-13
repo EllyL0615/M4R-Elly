@@ -21,13 +21,13 @@ sns.set_style("whitegrid", {'grid.linestyle': '--', 'grid.alpha': 0.3})
 # Load data
 df = pd.read_csv(CSV_PATH)
 error_cols = [
-    'Invalid Answer', 'Column Selection Error (CSE)', 'Statistical Task Confusion (STC)', 
-    'Applicability Error (AE)', 'Mixed Errors (CSE+AE)', 'Mixed Errors (CSE+STC)', 
+    'Invalid Answer', 'Applicability Error (AE)', 'Mixed Errors (CSE+AE)',
+    'Column Selection Error (CSE)', 'Mixed Errors (CSE+STC)', 'Statistical Task Confusion (STC)',
     'Mixed Errors (STC+AE)', 'Mixed Errors (CSE+STC+AE)'
 ]
 
 # Define Groups
-groups_order = ['llama2_13b', 'llama2_7b', 'llama3_8b', 'llama3_8b_instruct', 'llamadeepseek']
+groups_order = ['llama2_13b', 'llama2_7b', 'llama3_8b', 'llama3_8b_instruct', 'deepseek']
 
 def group_model(model):
     if 'llama2_13b' in model: return 'llama2_13b'
