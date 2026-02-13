@@ -34,6 +34,9 @@ def llama_answer_generation(model_type: str, dataset_name: str, output_name: str
     elif model_type == '3_8b':
         model_path = "/rds/general/user/yl9422/home/files/models/Meta-Llama-3-8B"
         parallel_num = 1
+    elif model_type == 'deepseek':
+        model_path = "/rds/general/user/yl9422/home/files/models/DeepSeek-R1-Distill-Qwen-7B"
+        parallel_num = 1
     else:
         raise ValueError("[!] Invalid model type. Please choose from: 2_7b, 2_13b, 3_8b_instruct and 3_8b")
     
@@ -42,6 +45,10 @@ def llama_answer_generation(model_type: str, dataset_name: str, output_name: str
         max_tokens_limit = 1024
     else:
         max_tokens_limit = 256
+    
+    # deepseek R1 may need more token for reasoning
+    if 'deepseek' in model_type:
+        max_tokens_limit = 2048
 
     answer_store_path = "Origin Answer/"
     prompt_dataset_path = prompt_dataset_path_test
@@ -50,10 +57,19 @@ def llama_answer_generation(model_type: str, dataset_name: str, output_name: str
     answer_column_name = "model_answer"
 
     # Initialize model and sampling parameters
-    llm = LLM(
-        model=model_path,
-        tensor_parallel_size=parallel_num  # Adjust according to GPU configuration
-    )
+    if 'deepseek' in model_type:
+        llm = LLM(
+            model=model_path,
+            tensor_parallel_size=parallel_num,  # Adjust according to GPU configuration
+            max_model_len=8192,
+            gpu_memory_utilization=0.92
+        )
+    else:
+        llm = LLM(
+            model=model_path,
+            tensor_parallel_size=parallel_num  # Adjust according to GPU configuration
+        )
+    
     sampling_params = SamplingParams(
         temperature=0.0, 
         top_p=1.0, 
