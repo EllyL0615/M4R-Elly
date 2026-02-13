@@ -21,9 +21,9 @@ sns.set_style("whitegrid", {'grid.linestyle': '--', 'grid.alpha': 0.3})
 # Load data
 df = pd.read_csv(CSV_PATH)
 error_cols = [
-    'Invalid Answer', 'Applicability Error (AE)', 'Mixed Errors (CSE+AE)',
+    'Invalid Answer', 
     'Column Selection Error (CSE)', 'Mixed Errors (CSE+STC)', 'Statistical Task Confusion (STC)',
-    'Mixed Errors (STC+AE)', 'Mixed Errors (CSE+STC+AE)'
+    'Mixed Errors (STC+AE)', 'Applicability Error (AE)', 'Mixed Errors (CSE+AE)', 'Mixed Errors (CSE+STC+AE)'
 ]
 
 # Define Groups
