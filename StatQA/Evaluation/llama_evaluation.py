@@ -38,7 +38,7 @@ def llama_answer_generation(model_type: str, dataset_name: str, output_name: str
         model_path = "/rds/general/user/yl9422/home/files/models/DeepSeek-R1-Distill-Qwen-7B"
         parallel_num = 1
     else:
-        raise ValueError("[!] Invalid model type. Please choose from: 2_7b, 2_13b, 3_8b_instruct and 3_8b")
+        raise ValueError("[!] Invalid model type. Please choose from: 2_7b, 2_13b, 3_8b_instruct, 3_8b, and deepseek")
     
     # max token limit settings
     if trick == 'zero-shot-CoT' or trick == 'one-shot-CoT':

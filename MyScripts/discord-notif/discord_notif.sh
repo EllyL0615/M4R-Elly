@@ -13,6 +13,12 @@ if [ -z "${PBS_JOBID}" ]; then
     return 0 2>/dev/null || exit 0
 fi
 
+# If webhook is not configured, skip notifications without failing the job.
+if [ -z "${DISCORD_WEBHOOK_URL:-}" ]; then
+    echo "[i] DISCORD_WEBHOOK_URL is not set; skip Discord notification."
+    return 0 2>/dev/null || exit 0
+fi
+
 # function definition
 send_discord_notif() {
     local STATUS="$1"
@@ -37,7 +43,7 @@ data = {"content": """${MESSAGE}"""}
 try:
     requests.post(url, json=data, timeout=10)
 except Exception:
-    traceback.print_exc()
+    pass
 EOF
 }
 
