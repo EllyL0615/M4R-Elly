@@ -1,0 +1,20 @@
+### Task Description: You need to select relevant columns and all applicable methods from provided list for the given statistical question.
+### Instruction: You should only reply with one answer in JSON format containing two keys: 'columns' and 'methods'. The value of 'columns' is a list of columns' headers relevant to the given statistical question, and the value of 'methods' is a list containing all methods you think applicable. For example: {"columns": ["c1", "c2", "..."], "methods": ["m1", "m2", "..."]}. If you think there is a strata or control variable involved, put its column header in the last item of the columns list. Ensure your methods selection is only limited to the classification list provided.
+### Classification List: 
+Correlation Analysis: Pearson Correlation Coefficient, Spearman Correlation Coefficient, Kendall Correlation Coefficient, Partial Correlation Coefficient;
+Distribution Compliance Test: Anderson-Darling Test, Shapiro-Wilk Test of Normality, Kolmogorov-Smirnov Test for Normality, Lilliefors Test, Kolmogorov-Smirnov Test, Kolmogorov-Smirnov Test for Uniform distribution, Kolmogorov-Smirnov Test for Gamma distribution, Kolmogorov-Smirnov Test for Exponential distribution;
+Contingency Table Test: Chi-square Independence Test, Fisher Exact Test, Mantel-Haenszel Test;
+Descriptive Statistics: Mean, Median, Mode, Range, Quartile, Standard Deviation, Skewness, Kurtosis;
+Variance Test: Mood Variance Test, Levene Test, Bartlett Test, F-Test for Variance.
+### Column Information: 
+column_header: Serial No.; data_type: id; num_of_rows: 400; is_normality: False.
+column_header: GRE Score; data_type: quantitative; num_of_rows: 400; is_normality: False.
+column_header: TOEFL Score; data_type: quantitative; num_of_rows: 400; is_normality: False.
+column_header: University Rating; data_type: categorical; num_of_rows: 400; is_normality: False.
+column_header: SOP; data_type: quantitative; num_of_rows: 400; is_normality: False.
+column_header: LOR ; data_type: quantitative; num_of_rows: 400; is_normality: False.
+column_header: CGPA; data_type: quantitative; num_of_rows: 400; is_normality: True.
+column_header: Research; data_type: categorical; num_of_rows: 400; is_normality: False.
+column_header: Chance of Admit ; data_type: quantitative; num_of_rows: 400; is_normality: False.
+### Statistical Question: Is the variability in GRE scores not significantly different from that in Letter of Recommendation?
+### Response: The answer of relevant columns and applicable methods in JSON format is: {"columns": ["GRE Score", "LOR "], "methods": ["

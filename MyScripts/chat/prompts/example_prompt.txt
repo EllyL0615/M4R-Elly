@@ -1,0 +1,13 @@
+### Task Description: You need to select all applicable methods from provided Classification List for the given statistical question.
+### Statistical Question: Is the variability in GRE scores not significantly different from that in Letter of Recommendation?
+### Column Information: 
+column_header: GRE Score; data_type: quantitative; num_of_rows: 400; is_normality: False.
+column_header: LOR ; data_type: quantitative; num_of_rows: 400; is_normality: False.
+### Classification List: 
+Correlation Analysis: Pearson Correlation Coefficient, Spearman Correlation Coefficient, Kendall Correlation Coefficient, Partial Correlation Coefficient;
+Distribution Compliance Test: Anderson-Darling Test, Shapiro-Wilk Test of Normality, Kolmogorov-Smirnov Test for Normality, Lilliefors Test, Kolmogorov-Smirnov Test, Kolmogorov-Smirnov Test for Uniform distribution, Kolmogorov-Smirnov Test for Gamma distribution, Kolmogorov-Smirnov Test for Exponential distribution;
+Contingency Table Test: Chi-square Independence Test, Fisher Exact Test, Mantel-Haenszel Test;
+Descriptive Statistics: Mean, Median, Mode, Range, Quartile, Standard Deviation, Skewness, Kurtosis;
+Variance Test: Mood Variance Test, Levene Test, Bartlett Test, F-Test for Variance.
+### Instruction: You should select all applicable methods from provided Classification List for the given statistical question, and only reply with one answer in JSON format containing one key: 'judgements'. The value of 'judgements' is a dictionary where the keys are all 27 method names and each value is a letter "T" or "F", the value is "T" ONLY if is method is in your selection, "F" otherwise.
+### Response: The answer of relevant columns and applicable methods in JSON format is:
