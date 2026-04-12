@@ -87,11 +87,85 @@ def extract_refined_question(row_index):
     return refined_question_content
 
 
+'''
+Format one metadata row into prompt text.
+'''
+def format_column_metadata_row(meta_row, metadata_headers) -> str:
+    col_meta_str = ''
+    for header in metadata_headers:
+        # Value of key "dataset" and "column_description" will be not provided
+        if header != "dataset" and header != "column_description":
+            value = meta_row[header]
+            # Normalize only data_type values; do not rewrite the whole line,
+            # otherwise column_header strings containing "cate" can be corrupted.
+            if header == 'data_type':
+                value_str = str(value)
+                if value_str == 'cate':
+                    value = 'categorical'
+                elif value_str == 'quant':
+                    value = 'quantitative'
+            col_meta_str += f"{header}: {value}; "
+    # replace semicolon in the end of the row with period mark
+    col_meta_str = col_meta_str[:-2] + '.'
+    return col_meta_str
+
+
+'''
+Extract relevant columns for SCRC prompt construction.
+Priority:
+1) ground_truth.columns if available
+2) relevant_column[*].column_header
+'''
+def extract_scrc_relevant_columns(row_index) -> list:
+    if row_index >= len(df):
+        return []
+
+    # Priority 1: ground_truth columns
+    if 'ground_truth' in df.columns:
+        ground_truth_content = df.at[row_index, 'ground_truth']
+        if pd.notna(ground_truth_content):
+            try:
+                ground_truth_json = json.loads(ground_truth_content)
+            except Exception:
+                try:
+                    ground_truth_json = json.loads(ground_truth_content.replace("'", '"'))
+                except Exception:
+                    ground_truth_json = None
+
+            if isinstance(ground_truth_json, dict):
+                columns = ground_truth_json.get('columns', [])
+                if isinstance(columns, list):
+                    cleaned_columns = [str(col).strip() for col in columns if str(col).strip()]
+                    if cleaned_columns:
+                        return cleaned_columns
+
+    # Priority 2: relevant_column field
+    relevant_column_content = df.at[row_index, 'relevant_column']
+    try:
+        relevant_column_json = json.loads(relevant_column_content)
+    except Exception:
+        try:
+            relevant_column_json = json.loads(relevant_column_content.replace("'", '"'))
+        except Exception:
+            return []
+
+    extracted_columns = []
+    if isinstance(relevant_column_json, list):
+        for item in relevant_column_json:
+            if isinstance(item, dict):
+                column_header = str(item.get('column_header', '')).strip()
+                if column_header:
+                    extracted_columns.append(column_header)
+
+    return extracted_columns
+
+
 
 '''
 Organize prompt for row
 trick: input should be in string format, refer to tricks for LLMs:
-    1) 'zero-shot'; 2)'one-shot'; 3)'two-shot'; 4)'zero-shot-CoT'; 5)'one-shot-CoT'; 6) 'stats-prompt' (introducing domain knowledge).
+    1) 'zero-shot'; 2)'one-shot'; 3)'two-shot'; 4)'zero-shot-CoT'; 5)'one-shot-CoT';
+    6) 'stats-prompt' (introducing domain knowledge); 7) 'linear-probe' (SCRC methods-only prompt).
 '''
 def prompt_organization(row_index, curr_dataset: str, trick: str)->str:
     FEW_SHOT_LIST = [CA_EG, CTT_EG, DCT_EG, VT_EG, DS_EG]
@@ -104,15 +178,7 @@ def prompt_organization(row_index, curr_dataset: str, trick: str)->str:
     # Replace some string
     for i in range(curr_dataset_meta_df.shape[0]):
         row = curr_dataset_meta_df.iloc[i]
-        col_meta_str = ''
-        for header in curr_dataset_meta_df.columns:
-            # Value of key "dataset" and "column_description" will be not provided
-            if (header != "dataset" and header != "column_description"):
-                col_meta_str += f"{header}: {row[header]}; "
-        # replace semicolon in the end of the row with period mark
-        col_meta_str = col_meta_str[:-2] + '.'
-        col_meta_str = col_meta_str.replace("cate", "categorical")
-        col_meta_str = col_meta_str.replace("quant", "quantitative")
+        col_meta_str = format_column_metadata_row(meta_row=row, metadata_headers=curr_dataset_meta_df.columns)
         # Merge the metadata into a list
         meta_info_list.append(col_meta_str)
     
@@ -169,6 +235,32 @@ def prompt_organization(row_index, curr_dataset: str, trick: str)->str:
                 + "\n### Column Information: \n" + '\n'.join(meta_info_list) \
                 + "\n### Statistical Question: " + refined_question \
                 + "\n### Response: " + PROMPT_RESPONSE
+    elif trick == 'linear-probe' or trick == 'scrc-linear-probe':
+        relevant_column_headers = extract_scrc_relevant_columns(row_index=row_index)
+        relevant_meta_info_list = []
+
+        for column_header in relevant_column_headers:
+            matched_rows = curr_dataset_meta_df[
+                curr_dataset_meta_df['column_header'].astype(str).str.strip() == str(column_header).strip()
+            ]
+            if not matched_rows.empty:
+                relevant_meta_info_list.append(
+                    format_column_metadata_row(meta_row=matched_rows.iloc[0], metadata_headers=curr_dataset_meta_df.columns)
+                )
+            else:
+                relevant_meta_info_list.append(
+                    f"column_header: {column_header}; data_type: unknown; num_of_rows: N/A; is_normality: N/A."
+                )
+
+        if not relevant_meta_info_list:
+            raise ValueError(f"[!] No relevant columns found for row {row_index} in trick '{trick}'.")
+
+        organized_prompt = "### Task Description: " + PROMPT_TASK_DESCRIPTION_SCRC \
+                + "\n### Instruction: " + PROMPT_INSTRUCTION_SCRC \
+                + "\n### Classification List: \n" + PROMPT_CLASSIFICATION \
+                + "\n### Relevant Columns:\n" + '\n'.join(relevant_meta_info_list) \
+                + "\n### Statistical Question: " + refined_question \
+                + "\n### Response: " + PROMPT_RESPONSE_SCRC_PREFIX
     else:
         raise ValueError("[!] Invalid trick: " + trick)       
     return organized_prompt
@@ -179,7 +271,7 @@ if __name__ == "__main__":
     # Attention: for training set which will be used in finetuning, the trick should be selected as zero-shot.
     parser = argparse.ArgumentParser(description='Process dataset to generate prompt based on a specified trick.')
     parser.add_argument('--trick_name', default='zero-shot', type=str, required=True,
-                        help="The trick to be applied for prompt generation. Available tricks: 'zero-shot', 'one-shot', 'two-shot', 'zero-shot-CoT', 'one-shot-CoT'.")
+                        help="The trick to be applied for prompt generation. Available tricks: 'zero-shot', 'one-shot', 'two-shot', 'zero-shot-CoT', 'one-shot-CoT', 'stats-prompt', 'linear-probe'.")
     parser.add_argument('--integ_dataset_name', default='Benchmark test', type=str, required=True,
                         help='The name of the integrated dataset to be processed.')
 

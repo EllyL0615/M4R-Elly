@@ -27,6 +27,15 @@ PROMPT_RESPONSE_EXPLAIN = '''The answer of relevant columns and applicable metho
 PROMPT_COT = '''Let's work this out in a step-by-step way to be sure we have the right answer. '''
 
 
+'''-------------------------------------------
+SCRC methods-only prompt template
+'''
+
+PROMPT_TASK_DESCRIPTION_SCRC = '''You need to select all applicable methods from provided Classification List based on the given Statistical Question and the properties of the Relevant Columns.'''
+PROMPT_INSTRUCTION_SCRC = '''You should only reply with one answer in JSON format containing one key: 'methods'. The value of 'methods' is a list containing all methods you think applicable. The template is: {"methods": ["m1", "m2", "..."]}. Ensure your methods selection is only limited to the classification list provided.'''
+PROMPT_RESPONSE_SCRC_PREFIX = '''The answer of applicable methods in JSON format is: {"methods": ["'''
+
+
 
 
 '''------------------

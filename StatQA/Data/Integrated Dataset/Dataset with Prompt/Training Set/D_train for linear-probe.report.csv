@@ -1,0 +1,3 @@
+row_index,dataset,column_header,fallback_type,reason
+778,Jobs and Salaries Dataset,job_category,metadata_file,missing_or_mismatched_in_zero_shot_prompt_block
+6250,Jobs and Salaries Dataset,job_category,metadata_file,missing_or_mismatched_in_zero_shot_prompt_block
