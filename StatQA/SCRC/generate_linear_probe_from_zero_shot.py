@@ -47,7 +47,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         '--report_csv',
-        default='Data/Integrated Dataset/Dataset with Prompt/Training Set/D_train for linear-probe.report.csv',
+        default='SCRC/D_train for linear-probe.report.csv',
         type=str,
         help='Diagnostic report path for fallback cases.',
     )
