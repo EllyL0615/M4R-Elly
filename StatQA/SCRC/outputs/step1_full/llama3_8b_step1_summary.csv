@@ -1,0 +1,4 @@
+split,hidden_states,answers,num_rows,hidden_shape
+probe-train,/rds/general/user/yl9422/home/files/M4R-Elly/StatQA/SCRC/outputs/step1_full/llama3_8b_probe-train_hidden-states.npy,/rds/general/user/yl9422/home/files/M4R-Elly/StatQA/Model Answer/Origin Answer/llama3_8b_probe-train.csv,5230,"(5230, 4096)"
+conformal-calib,/rds/general/user/yl9422/home/files/M4R-Elly/StatQA/SCRC/outputs/step1_full/llama3_8b_conformal-calib_hidden-states.npy,/rds/general/user/yl9422/home/files/M4R-Elly/StatQA/Model Answer/Origin Answer/llama3_8b_conformal-calib.csv,5230,"(5230, 4096)"
+conformal-test,/rds/general/user/yl9422/home/files/M4R-Elly/StatQA/SCRC/outputs/step1_full/llama3_8b_conformal-test_hidden-states.npy,/rds/general/user/yl9422/home/files/M4R-Elly/StatQA/Model Answer/Origin Answer/llama3_8b_conformal-test.csv,1163,"(1163, 4096)"
