@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Generate methods-only linear-probe prompts for training set by reusing
+Generate methods-only prompts for training set by reusing
 per-row Column Information blocks from `D_train for zero-shot.csv`.
 
 This script is designed for reproducibility of the one-off conversion.
@@ -31,7 +31,7 @@ import utils  # noqa: E402
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description='Generate D_train for linear-probe from D_train for zero-shot.'
+        description='Generate D_train for methods-only from D_train for zero-shot.'
     )
     parser.add_argument(
         '--input_csv',
@@ -41,13 +41,13 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         '--output_csv',
-        default='Data/Integrated Dataset/Dataset with Prompt/Training Set/D_train for linear-probe.csv',
+        default='Data/Integrated Dataset/Dataset with Prompt/Training Set/D_train for methods-only.csv',
         type=str,
-        help='Output CSV path (linear-probe training prompt file).',
+        help='Output CSV path (methods-only training prompt file).',
     )
     parser.add_argument(
         '--report_csv',
-        default='SCRC/D_train for linear-probe.report.csv',
+        default='SCRC/D_train for methods-only.report.csv',
         type=str,
         help='Diagnostic report path for fallback cases.',
     )

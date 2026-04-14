@@ -39,13 +39,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--train_csv",
         type=str,
-        default="Data/Integrated Dataset/Dataset with Prompt/Training Set/D_train for linear-probe.csv",
+        default="Data/Integrated Dataset/Dataset with Prompt/Training Set/D_train for methods-only.csv",
         help="Training CSV with prompt column.",
     )
     parser.add_argument(
         "--test_csv",
         type=str,
-        default="Data/Integrated Dataset/Dataset with Prompt/Test Set/mini-StatQA for linear-probe.csv",
+        default="Data/Integrated Dataset/Dataset with Prompt/Test Set/mini-StatQA for methods-only.csv",
         help="Test CSV with prompt column.",
     )
     parser.add_argument(

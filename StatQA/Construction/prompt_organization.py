@@ -165,7 +165,7 @@ def extract_scrc_relevant_columns(row_index) -> list:
 Organize prompt for row
 trick: input should be in string format, refer to tricks for LLMs:
     1) 'zero-shot'; 2)'one-shot'; 3)'two-shot'; 4)'zero-shot-CoT'; 5)'one-shot-CoT';
-    6) 'stats-prompt' (introducing domain knowledge); 7) 'linear-probe' (SCRC methods-only prompt).
+    6) 'stats-prompt' (introducing domain knowledge); 7) 'methods-only' (SCRC methods-only prompt).
 '''
 def prompt_organization(row_index, curr_dataset: str, trick: str)->str:
     FEW_SHOT_LIST = [CA_EG, CTT_EG, DCT_EG, VT_EG, DS_EG]
@@ -235,7 +235,7 @@ def prompt_organization(row_index, curr_dataset: str, trick: str)->str:
                 + "\n### Column Information: \n" + '\n'.join(meta_info_list) \
                 + "\n### Statistical Question: " + refined_question \
                 + "\n### Response: " + PROMPT_RESPONSE
-    elif trick == 'linear-probe' or trick == 'scrc-linear-probe':
+    elif trick == 'methods-only' or trick == 'scrc-methods-only':
         relevant_column_headers = extract_scrc_relevant_columns(row_index=row_index)
         relevant_meta_info_list = []
 
@@ -271,7 +271,7 @@ if __name__ == "__main__":
     # Attention: for training set which will be used in finetuning, the trick should be selected as zero-shot.
     parser = argparse.ArgumentParser(description='Process dataset to generate prompt based on a specified trick.')
     parser.add_argument('--trick_name', default='zero-shot', type=str, required=True,
-                        help="The trick to be applied for prompt generation. Available tricks: 'zero-shot', 'one-shot', 'two-shot', 'zero-shot-CoT', 'one-shot-CoT', 'stats-prompt', 'linear-probe'.")
+                        help="The trick to be applied for prompt generation. Available tricks: 'zero-shot', 'one-shot', 'two-shot', 'zero-shot-CoT', 'one-shot-CoT', 'stats-prompt', 'methods-only'.")
     parser.add_argument('--integ_dataset_name', default='Benchmark test', type=str, required=True,
                         help='The name of the integrated dataset to be processed.')
 
