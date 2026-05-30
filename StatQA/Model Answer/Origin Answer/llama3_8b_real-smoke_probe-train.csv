@@ -1,0 +1,38 @@
+dataset,refined_question,relevant_column,task,difficulty,results,prompt,model_answer,ground_truth
+Real Estate Valuation Dataset,Is the distribution of house prices per unit area (Y) approximately normal?,"[{""column_header"": ""Y house price of unit area"", ""is_strata"": false, ""is_control"": false}]",Distribution Compliance Test,medium,"[{""method"": ""Anderson-Darling Test"", ""result"": ""{\""AD results\"": \""{\\\""stat\\\"": 0.81236, \\\""crit\\\"": 0.571}\""}"", ""conclusion"": ""Non-normally distributed""}, {""method"": ""Shapiro-Wilk Test of Normality"", ""result"": ""{\""p value\"": \""null\""}"", ""conclusion"": ""Not applicable""}, {""method"": ""Kolmogorov-Smirnov Test for Normality"", ""result"": ""{\""p value\"": 0.75096}"", ""conclusion"": ""Normally distributed""}, {""method"": ""Lilliefors Test"", ""result"": ""{\""p value\"": 0.38758}"", ""conclusion"": ""Normally distributed""}]","### Task Description: You need to select all applicable methods from provided Classification List based on the given Statistical Question and the properties of the Relevant Columns.
+### Instruction: You should only reply with one answer in JSON format containing one key: 'methods'. The value of 'methods' is a list containing all methods you think applicable. The template is: {""methods"": [""m1"", ""m2"", ""...""]}. Ensure your methods selection is only limited to the classification list provided.
+### Classification List: 
+Correlation Analysis: Pearson Correlation Coefficient, Spearman Correlation Coefficient, Kendall Correlation Coefficient, Partial Correlation Coefficient;
+Distribution Compliance Test: Anderson-Darling Test, Shapiro-Wilk Test of Normality, Kolmogorov-Smirnov Test for Normality, Lilliefors Test, Kolmogorov-Smirnov Test, Kolmogorov-Smirnov Test for Uniform distribution, Kolmogorov-Smirnov Test for Gamma distribution, Kolmogorov-Smirnov Test for Exponential distribution;
+Contingency Table Test: Chi-square Independence Test, Fisher Exact Test, Mantel-Haenszel Test;
+Descriptive Statistics: Mean, Median, Mode, Range, Quartile, Standard Deviation, Skewness, Kurtosis;
+Variance Test: Mood Variance Test, Levene Test, Bartlett Test, F-Test for Variance.
+### Relevant Columns:
+column_header: Y house price of unit area; data_type: quantitative; num_of_rows: 414; is_normality: False.
+### Statistical Question: Is the distribution of house prices per unit area (Y) approximately normal?
+### Response: The answer of applicable methods in JSON format is: {""methods"": [""","Shapiro-Wilk Test of Normality"", ""Kolmogorov-Smirnov Test for Normality"", ""Lilliefors Test"", ""Kolmogorov-Smirnov Test"", ""Kolmogorov-Smirnov Test for Uniform distribution"", ""Kolmogorov-Smirnov Test for Gamma distribution"", ""Kolmogorov-Smirnov Test for Exponential distribution""]}.","{""columns"": [""Y house price of unit area""], ""methods"": [""Anderson-Darling Test"", ""Kolmogorov-Smirnov Test for Normality"", ""Lilliefors Test""]}"
+FIFA Official Dataset 2023,What is the average estimated market value of the players in pounds (£)?,"[{""column_header"": ""Value"", ""is_strata"": false, ""is_control"": false}]",Descriptive Statistics,easy,"[{""method"": ""Mean"", ""result"": ""2739788.39185"", ""conclusion"": ""2739788.39185""}]","### Task Description: You need to select all applicable methods from provided Classification List based on the given Statistical Question and the properties of the Relevant Columns.
+### Instruction: You should only reply with one answer in JSON format containing one key: 'methods'. The value of 'methods' is a list containing all methods you think applicable. The template is: {""methods"": [""m1"", ""m2"", ""...""]}. Ensure your methods selection is only limited to the classification list provided.
+### Classification List: 
+Correlation Analysis: Pearson Correlation Coefficient, Spearman Correlation Coefficient, Kendall Correlation Coefficient, Partial Correlation Coefficient;
+Distribution Compliance Test: Anderson-Darling Test, Shapiro-Wilk Test of Normality, Kolmogorov-Smirnov Test for Normality, Lilliefors Test, Kolmogorov-Smirnov Test, Kolmogorov-Smirnov Test for Uniform distribution, Kolmogorov-Smirnov Test for Gamma distribution, Kolmogorov-Smirnov Test for Exponential distribution;
+Contingency Table Test: Chi-square Independence Test, Fisher Exact Test, Mantel-Haenszel Test;
+Descriptive Statistics: Mean, Median, Mode, Range, Quartile, Standard Deviation, Skewness, Kurtosis;
+Variance Test: Mood Variance Test, Levene Test, Bartlett Test, F-Test for Variance.
+### Relevant Columns:
+column_header: Value; data_type: quantitative; num_of_rows: 17660; is_normality: False.
+### Statistical Question: What is the average estimated market value of the players in pounds (£)?
+### Response: The answer of applicable methods in JSON format is: {""methods"": [""","Mean""]}.","{""columns"": [""Value""], ""methods"": [""Mean""]}"
+US Christmas Tree Sales Dataset,Is there any relationship between the number of trees sold and the average tree price?,"[{""column_header"": ""Number of trees sold"", ""is_strata"": false, ""is_control"": false}, {""column_header"": ""Average Tree Price"", ""is_strata"": false, ""is_control"": false}]",Correlation Analysis,medium,"[{""method"": ""Pearson Correlation Coefficient"", ""result"": ""{\""coefficient\"": \""null\""}"", ""conclusion"": ""Not applicable""}, {""method"": ""Spearman Correlation Coefficient"", ""result"": ""{\""coefficient\"": \""null\""}"", ""conclusion"": ""Not applicable""}, {""method"": ""Kendall Correlation Coefficient"", ""result"": ""{\""coefficient\"": -0.42857}"", ""conclusion"": ""Not strongly correlated""}]","### Task Description: You need to select all applicable methods from provided Classification List based on the given Statistical Question and the properties of the Relevant Columns.
+### Instruction: You should only reply with one answer in JSON format containing one key: 'methods'. The value of 'methods' is a list containing all methods you think applicable. The template is: {""methods"": [""m1"", ""m2"", ""...""]}. Ensure your methods selection is only limited to the classification list provided.
+### Classification List: 
+Correlation Analysis: Pearson Correlation Coefficient, Spearman Correlation Coefficient, Kendall Correlation Coefficient, Partial Correlation Coefficient;
+Distribution Compliance Test: Anderson-Darling Test, Shapiro-Wilk Test of Normality, Kolmogorov-Smirnov Test for Normality, Lilliefors Test, Kolmogorov-Smirnov Test, Kolmogorov-Smirnov Test for Uniform distribution, Kolmogorov-Smirnov Test for Gamma distribution, Kolmogorov-Smirnov Test for Exponential distribution;
+Contingency Table Test: Chi-square Independence Test, Fisher Exact Test, Mantel-Haenszel Test;
+Descriptive Statistics: Mean, Median, Mode, Range, Quartile, Standard Deviation, Skewness, Kurtosis;
+Variance Test: Mood Variance Test, Levene Test, Bartlett Test, F-Test for Variance.
+### Relevant Columns:
+column_header: Number of trees sold; data_type: quantitative; num_of_rows: 14; is_normality: True.
+column_header: Average Tree Price; data_type: quantitative; num_of_rows: 14; is_normality: True.
+### Statistical Question: Is there any relationship between the number of trees sold and the average tree price?
+### Response: The answer of applicable methods in JSON format is: {""methods"": [""","Pearson Correlation Coefficient"", ""Spearman Correlation Coefficient"", ""Kendall Correlation Coefficient"", ""Partial Correlation Coefficient"", ""Chi-square Independence Test"", ""F-Test for Variance""]}.","{""columns"": [""Number of trees sold"", ""Average Tree Price""], ""methods"": [""Kendall Correlation Coefficient""]}"

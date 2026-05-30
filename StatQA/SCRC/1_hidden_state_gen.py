@@ -5,8 +5,8 @@
 Step 1 for SCRC: extract hidden states and generate method-answer completions.
 
 This script supports:
-- Reproducible train split: probe-train / conformal-calib (50/50 stratified by task)
-- Fixed test split: conformal-test from mini-StatQA
+- Reproducible train split: train / calib (50/50 stratified by task)
+- Fixed test split: test from mini-StatQA
 - Hidden-state extraction at the final layer, final token position
 - Greedy decoding (equivalent to vLLM temperature=0, top_p=1)
 - Origin Answer-compatible CSV export
@@ -410,9 +410,9 @@ def main() -> None:
         print("[i] Running in mock inference mode for smoke validation.")
 
     split_map = {
-        "probe-train": probe_df,
-        "conformal-calib": calib_df,
-        "conformal-test": test_df,
+        "train": probe_df,
+        "calib": calib_df,
+        "test": test_df,
     }
 
     summary_rows: List[Dict[str, str]] = []

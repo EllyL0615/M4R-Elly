@@ -1,13 +1,14 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=1:mem=12gb:ngpus=1
-#PBS -l walltime=00:10:00
-#PBS -N scrc_step1_smoke_real
-#PBS -o /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/SCRC/outputs/step1_smoke_real
-#PBS -e /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/SCRC/outputs/step1_smoke_real
+#PBS -l select=1:ncpus=8:mem=64gb:ngpus=1
+#PBS -l walltime=8:00:00
+#PBS -N hs_gen
+#PBS -o /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/SCRC/outputs/step1
+#PBS -e /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/SCRC/outputs/step1
 
 set -e
 
 cd /rds/general/user/yl9422/home/files/M4R-Elly/StatQA
+mkdir -p SCRC/outputs/step1
 
 echo "[i] Host: $(hostname)"
 echo "[i] Start: $(date '+%Y-%m-%d %H:%M:%S')"
@@ -21,12 +22,11 @@ conda activate M4R
 source ~/.bashrc
 source /rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/discord-notif/discord_notif.sh
 
-/rds/general/user/yl9422/home/miniforge3/envs/M4R/bin/python SCRC/hidden_state_extractor.py \
-  --smoke_rows_per_split 3 \
+/rds/general/user/yl9422/home/miniforge3/envs/M4R/bin/python SCRC/1_hidden_state_gen.py \
   --batch_size 10 \
   --max_new_tokens 256 \
-  --hidden_state_dir "SCRC/outputs/step1_smoke_real" \
+  --hidden_state_dir "SCRC/outputs" \
   --origin_answer_dir "Model Answer/Origin Answer" \
-  --model_name "llama3_8b_real-smoke"
+  --model_name "llama3_8b"
 
 echo "[i] End: $(date '+%Y-%m-%d %H:%M:%S')"
