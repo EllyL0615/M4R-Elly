@@ -27,9 +27,16 @@ send_discord_notif() {
     local TIME
     TIME=$(date "+%Y-%m-%d %H:%M:%S")
 
+    # Optional model line (SCRC jobs pass MODEL_TYPE via qsub -v MODEL_TYPE=...).
+    local MODEL_LINE=""
+    if [ -n "${MODEL_TYPE:-}" ]; then
+        MODEL_LINE="
+- **Model:** \`${MODEL_TYPE}\`"
+    fi
+
     local MESSAGE="**CX3 Batch Job Update** 🚀
 - **Job Name:** \`${JOB_NAME}\`
-- **Job ID:** \`${JOB_ID}\`
+- **Job ID:** \`${JOB_ID}\`${MODEL_LINE}
 - **Status:** **${STATUS}**
 - **Time:** ${TIME}
 \u200b" # Discord will auto-delete empty lines so ...

@@ -5,8 +5,9 @@
 Step 1 for SCRC: extract hidden states and generate method-answer completions.
 
 This script supports:
-- Reproducible train split: train / calib (50/50 stratified by task)
+- D_train processed as a single block (no train/calib split)
 - Fixed test split: test from mini-StatQA
+- Selectable local LLaMA model via --model_type (3_1_8b / 3_2_1b / 3_2_3b)
 - Hidden-state extraction at the final layer, final token position
 - Greedy decoding (equivalent to vLLM temperature=0, top_p=1)
 - Origin Answer-compatible CSV export
@@ -25,11 +26,31 @@ from typing import Dict, List, Tuple
 import numpy as np
 import pandas as pd
 import torch
-from sklearn.model_selection import train_test_split
 
 
 main_folder_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, main_folder_path)
+
+
+# Local LLaMA model registry (mirrors Evaluation/llama_evaluation.py model_type).
+MODEL_TYPE_TO_PATH = {
+    "3_1_8b": "/rds/general/user/yl9422/home/files/models/Llama-3.1-8B",
+    "3_2_1b": "/rds/general/user/yl9422/home/files/models/Llama-3.2-1B",
+    "3_2_3b": "/rds/general/user/yl9422/home/files/models/Llama-3.2-3B",
+}
+
+MODEL_TYPE_TO_NAME = {
+    "3_1_8b": "llama3_1_8b",
+    "3_2_1b": "llama3_2_1b",
+    "3_2_3b": "llama3_2_3b",
+}
+
+# Hidden size per model (used only for --mock_inference; real runs read the model's native dim).
+MODEL_TYPE_TO_HIDDEN = {
+    "3_1_8b": 4096,
+    "3_2_1b": 2048,
+    "3_2_3b": 3072,
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -49,16 +70,23 @@ def parse_args() -> argparse.Namespace:
         help="Test CSV with prompt column.",
     )
     parser.add_argument(
+        "--model_type",
+        type=str,
+        default="3_1_8b",
+        choices=["3_1_8b", "3_2_1b", "3_2_3b"],
+        help="Which local LLaMA model to use (Llama-3.1-8B / 3.2-1B / 3.2-3B).",
+    )
+    parser.add_argument(
         "--model_path",
         type=str,
-        default="/rds/general/user/yl9422/home/files/models/Meta-Llama-3-8B",
-        help="Local model path for LLaMA-3 8B Base.",
+        default=None,
+        help="Override model path. If unset, derived from --model_type.",
     )
     parser.add_argument(
         "--model_name",
         type=str,
-        default="llama3_8b",
-        help="Output file prefix.",
+        default=None,
+        help="Override output file prefix. If unset, derived from --model_type.",
     )
     parser.add_argument(
         "--seed",
@@ -81,13 +109,13 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--hidden_state_dir",
         type=str,
-        default="SCRC/outputs/step1",
+        default="SCRC/data/data-full",
         help="Directory for hidden state outputs and split manifest.",
     )
     parser.add_argument(
         "--origin_answer_dir",
         type=str,
-        default="Model Answer/Origin Answer",
+        default="SCRC/data/data-full",
         help="Directory for Origin Answer-compatible CSV outputs.",
     )
     parser.add_argument(
@@ -139,25 +167,6 @@ def set_seed(seed: int) -> None:
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
-
-
-def split_train_df(train_df: pd.DataFrame, seed: int) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    if "task" not in train_df.columns:
-        raise ValueError("[!] Missing required column: task")
-
-    temp = train_df.copy()
-    temp["source_index"] = temp.index
-
-    probe_idx, calib_idx = train_test_split(
-        temp.index,
-        test_size=0.5,
-        random_state=seed,
-        stratify=temp["task"],
-    )
-
-    probe_df = temp.loc[probe_idx].reset_index(drop=True)
-    calib_df = temp.loc[calib_idx].reset_index(drop=True)
-    return probe_df, calib_df
 
 
 def parse_methods_from_results(results_value: str) -> List[str]:
@@ -241,13 +250,14 @@ def extract_hidden_states_and_answers(
     max_new_tokens: int,
     mock_inference: bool,
     seed: int,
+    mock_hidden_dim: int = 4096,
 ) -> Tuple[np.ndarray, List[str]]:
     if "prompt" not in df.columns:
         raise ValueError("[!] Missing required column: prompt")
 
     if mock_inference:
         rng = np.random.default_rng(seed + len(df))
-        hidden_states = rng.standard_normal((len(df), 4096)).astype(np.float32)
+        hidden_states = rng.standard_normal((len(df), mock_hidden_dim)).astype(np.float32)
         answers: List[str] = []
         for _, row in df.iterrows():
             methods = parse_methods_from_results(row.get("results", ""))
@@ -335,11 +345,11 @@ def save_split_outputs(
     origin_answer_dir: str,
 ) -> Dict[str, str]:
     hidden_state_file = os.path.join(
-        hidden_state_dir, f"{model_name}_{split_name}_hidden-states.npy"
+        hidden_state_dir, f"{model_name}_{split_name}_hs.npy"
     )
     np.save(hidden_state_file, hidden_states)
 
-    answer_file = os.path.join(origin_answer_dir, f"{model_name}_{split_name}.csv")
+    answer_file = os.path.join(origin_answer_dir, f"{model_name}_{split_name}_data.csv")
     out_df = build_origin_answer_df(split_df, answers)
     out_df.to_csv(answer_file, index=False, encoding="utf-8")
 
@@ -353,24 +363,26 @@ def save_split_outputs(
 
 
 def maybe_apply_smoke_subset(
-    probe_df: pd.DataFrame,
-    calib_df: pd.DataFrame,
+    train_df: pd.DataFrame,
     test_df: pd.DataFrame,
     smoke_rows_per_split: int,
-) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
     if smoke_rows_per_split <= 0:
-        return probe_df, calib_df, test_df
+        return train_df, test_df
 
-    probe_smoke = probe_df.head(smoke_rows_per_split).reset_index(drop=True)
-    calib_smoke = calib_df.head(smoke_rows_per_split).reset_index(drop=True)
+    train_smoke = train_df.head(smoke_rows_per_split).reset_index(drop=True)
     test_smoke = test_df.head(smoke_rows_per_split).reset_index(drop=True)
-    return probe_smoke, calib_smoke, test_smoke
+    return train_smoke, test_smoke
 
 
 def main() -> None:
     args = parse_args()
     configure_determinism()
     set_seed(args.seed)
+
+    model_path = args.model_path or MODEL_TYPE_TO_PATH[args.model_type]
+    model_name = args.model_name or MODEL_TYPE_TO_NAME[args.model_type]
+    mock_hidden_dim = MODEL_TYPE_TO_HIDDEN.get(args.model_type, 4096)
 
     start_time = time.time()
 
@@ -388,14 +400,15 @@ def main() -> None:
     train_df = pd.read_csv(train_csv)
     test_df = pd.read_csv(test_csv)
 
-    probe_df, calib_df = split_train_df(train_df, seed=args.seed)
+    # D_train is used as a single block (no train/calib split).
+    train_df = train_df.copy()
+    train_df["source_index"] = train_df.index
 
     test_df = test_df.copy()
     test_df["source_index"] = test_df.index
 
-    probe_df, calib_df, test_df = maybe_apply_smoke_subset(
-        probe_df,
-        calib_df,
+    train_df, test_df = maybe_apply_smoke_subset(
+        train_df,
         test_df,
         smoke_rows_per_split=args.smoke_rows_per_split,
     )
@@ -404,14 +417,13 @@ def main() -> None:
     tokenizer = None
     if not args.mock_inference:
         print("[i] Loading model and tokenizer...")
-        model, tokenizer = load_model_and_tokenizer(args.model_path)
+        model, tokenizer = load_model_and_tokenizer(model_path)
         print("[+] Model loaded.")
     else:
         print("[i] Running in mock inference mode for smoke validation.")
 
     split_map = {
-        "train": probe_df,
-        "calib": calib_df,
+        "train": train_df,
         "test": test_df,
     }
 
@@ -430,6 +442,7 @@ def main() -> None:
             max_new_tokens=args.max_new_tokens,
             mock_inference=args.mock_inference,
             seed=args.seed,
+            mock_hidden_dim=mock_hidden_dim,
         )
 
         if hidden_states.shape[0] != len(split_df):
@@ -449,7 +462,7 @@ def main() -> None:
             split_df=split_df,
             hidden_states=hidden_states,
             answers=answers,
-            model_name=args.model_name,
+            model_name=model_name,
             hidden_state_dir=hidden_state_dir,
             origin_answer_dir=origin_answer_dir,
         )
@@ -466,11 +479,11 @@ def main() -> None:
             )
 
     manifest_df = pd.DataFrame(manifest_rows)
-    manifest_path = os.path.join(hidden_state_dir, f"{args.model_name}_split_manifest.csv")
+    manifest_path = os.path.join(hidden_state_dir, f"{model_name}_split_manifest.csv")
     manifest_df.to_csv(manifest_path, index=False, encoding="utf-8")
 
     summary_df = pd.DataFrame(summary_rows)
-    summary_path = os.path.join(hidden_state_dir, f"{args.model_name}_step1_summary.csv")
+    summary_path = os.path.join(hidden_state_dir, f"{model_name}_step1_summary.csv")
     summary_df.to_csv(summary_path, index=False, encoding="utf-8")
 
     elapsed = time.time() - start_time

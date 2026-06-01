@@ -34,11 +34,20 @@ def llama_answer_generation(model_type: str, dataset_name: str, output_name: str
     elif model_type == '3_8b':
         model_path = "/rds/general/user/yl9422/home/files/models/Meta-Llama-3-8B"
         parallel_num = 1
+    elif model_type == '3_1_8b':
+        model_path = "/rds/general/user/yl9422/home/files/models/Llama-3.1-8B"
+        parallel_num = 1
+    elif model_type == '3_2_1b':
+        model_path = "/rds/general/user/yl9422/home/files/models/Llama-3.2-1B"
+        parallel_num = 1
+    elif model_type == '3_2_3b':
+        model_path = "/rds/general/user/yl9422/home/files/models/Llama-3.2-3B"
+        parallel_num = 1
     elif model_type == 'deepseek':
         model_path = "/rds/general/user/yl9422/home/files/models/DeepSeek-R1-Distill-Qwen-7B"
         parallel_num = 1
     else:
-        raise ValueError("[!] Invalid model type. Please choose from: 2_7b, 2_13b, 3_8b_instruct, 3_8b, and deepseek")
+        raise ValueError("[!] Invalid model type. Please choose from: 2_7b, 2_13b, 3_8b_instruct, 3_8b, 3_1_8b, 3_2_1b, 3_2_3b, and deepseek")
     
     # max token limit settings
     if trick == 'zero-shot-CoT' or trick == 'one-shot-CoT':
@@ -57,7 +66,10 @@ def llama_answer_generation(model_type: str, dataset_name: str, output_name: str
     answer_column_name = "model_answer"
 
     # Initialize model and sampling parameters
-    if 'deepseek' in model_type:
+    # Llama-3.1/3.2 ship a 128k context window; cap max_model_len so vLLM does not
+    # reserve a 128k-token KV cache (would OOM an 8B model on a single GPU). The task
+    # only needs ~750 tokens (~500 prompt + <=256 generation).
+    if 'deepseek' in model_type or model_type in ('3_1_8b', '3_2_1b', '3_2_3b'):
         llm = LLM(
             model=model_path,
             tensor_parallel_size=parallel_num,  # Adjust according to GPU configuration
@@ -127,7 +139,7 @@ def llama_answer_generation(model_type: str, dataset_name: str, output_name: str
 if __name__ == "__main__": 
     # Set the command line parameter parser
     parser = argparse.ArgumentParser(description='Generate answers using LLaMA.')
-    parser.add_argument('--model_type', type=str, default='2_7b', help="LLaMA-2/3 model type. Please choose from: '2_7b', '2_13b', '3_8b_instruct' and '3_8b'.")
+    parser.add_argument('--model_type', type=str, default='2_7b', help="LLaMA model type. Please choose from: '2_7b', '2_13b', '3_8b_instruct', '3_8b', '3_1_8b', '3_2_1b' and '3_2_3b'.")
     parser.add_argument('--dataset_name', type=str, default='mini-StatQA', help='The name of the dataset file without extension')
     parser.add_argument('--output_name', type=str, default="llama", help='The base name for the output file')
     parser.add_argument('--trick', type=str, default='zero-shot', help="Prompting Strategy. Please choose from: 'zero-shot', 'one-shot', 'zero-shot-CoT', 'one-shot-CoT' and 'stats-prompt' (introducing domain knowledge).")
