@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=64gb:ngpus=1
-#PBS -l walltime=3:00:00
+#PBS -l walltime=6:00:00
 #PBS -N hs_gen
 #PBS -o /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/SCRC/data/data-full
 #PBS -e /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/SCRC/data/data-full

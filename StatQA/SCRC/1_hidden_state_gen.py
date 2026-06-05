@@ -110,7 +110,7 @@ def parse_args() -> argparse.Namespace:
         "--hidden_state_dir",
         type=str,
         default="SCRC/data/data-full",
-        help="Directory for hidden state outputs and split manifest.",
+        help="Directory for hidden state (.npy) outputs.",
     )
     parser.add_argument(
         "--origin_answer_dir",
@@ -401,12 +401,6 @@ def main() -> None:
     test_df = pd.read_csv(test_csv)
 
     # D_train is used as a single block (no train/calib split).
-    train_df = train_df.copy()
-    train_df["source_index"] = train_df.index
-
-    test_df = test_df.copy()
-    test_df["source_index"] = test_df.index
-
     train_df, test_df = maybe_apply_smoke_subset(
         train_df,
         test_df,
@@ -422,13 +416,11 @@ def main() -> None:
     else:
         print("[i] Running in mock inference mode for smoke validation.")
 
+    # Output split labels: "medium" = D_train block, "hard" = mini-StatQA test set.
     split_map = {
-        "train": train_df,
-        "test": test_df,
+        "medium": train_df,
+        "hard": test_df,
     }
-
-    summary_rows: List[Dict[str, str]] = []
-    manifest_rows: List[Dict[str, object]] = []
 
     for split_name, split_df in split_map.items():
         print("------------------------------------------------------------")
@@ -457,7 +449,7 @@ def main() -> None:
                 f"{len(answers)} vs {len(split_df)}"
             )
 
-        summary = save_split_outputs(
+        save_split_outputs(
             split_name=split_name,
             split_df=split_df,
             hidden_states=hidden_states,
@@ -466,31 +458,10 @@ def main() -> None:
             hidden_state_dir=hidden_state_dir,
             origin_answer_dir=origin_answer_dir,
         )
-        summary_rows.append(summary)
-
-        for _, row in split_df.iterrows():
-            manifest_rows.append(
-                {
-                    "split": split_name,
-                    "source_index": int(row.get("source_index", -1)),
-                    "dataset": row.get("dataset", ""),
-                    "task": row.get("task", ""),
-                }
-            )
-
-    manifest_df = pd.DataFrame(manifest_rows)
-    manifest_path = os.path.join(hidden_state_dir, f"{model_name}_split_manifest.csv")
-    manifest_df.to_csv(manifest_path, index=False, encoding="utf-8")
-
-    summary_df = pd.DataFrame(summary_rows)
-    summary_path = os.path.join(hidden_state_dir, f"{model_name}_step1_summary.csv")
-    summary_df.to_csv(summary_path, index=False, encoding="utf-8")
 
     elapsed = time.time() - start_time
     print("============================================================")
     print("[+] Step 1 extraction finished.")
-    print(f"[i] Manifest: {manifest_path}")
-    print(f"[i] Summary : {summary_path}")
     print(f"[i] Elapsed : {elapsed:.2f}s")
 
 
