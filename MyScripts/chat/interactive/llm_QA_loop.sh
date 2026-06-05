@@ -2,7 +2,7 @@
 set -euo pipefail
 
 eval "$(~/miniforge3/bin/conda shell.bash hook)"
-conda activate M4R
+conda activate M4R_llama3x_vllm
 
 cd /rds/general/user/yl9422/home/files/M4R-Elly
 
@@ -10,19 +10,26 @@ cd /rds/general/user/yl9422/home/files/M4R-Elly
 export PYTHONNOUSERSITE=1
 unset PYTHONPATH
 
-# vLLM 0.4.2 workaround for some xformers/triton mismatches.
-export VLLM_ATTENTION_BACKEND=TORCH_SDPA
+# PBS sets CUDA_VISIBLE_DEVICES to a GPU UUID, which new vLLM tries to int() and crashes on.
+# Single-GPU interactive session -> pin to local index 0.
+export CUDA_VISIBLE_DEVICES=0
 
-PROMPT_FILE="/rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/chat/prompts/example_prompt.txt"
+# FlashInfer sampling would JIT-compile a CUDA kernel (needs nvcc, absent on compute nodes).
+# Use the PyTorch-native sampler instead (no effect on temperature=0.0 greedy decoding).
+export VLLM_USE_FLASHINFER_SAMPLER=0
+
+PROMPT_FILE="/rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/chat/prompts/linear_probe.txt"
 OUTPUT_DIR="/rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/chat/outputs"
-MODEL_TYPE="3_8b"    # choose from "2_7b", "2_13b", "3_8b_instruct", "3_8b", "deepseek"
+MODELS="3_1_8b,3_2_3b,3_2_1b"    # all loaded once; pick per round via '#model: <name>' on line 1 of the prompt file
 
-/rds/general/user/yl9422/home/miniforge3/envs/M4R/bin/python \
+python \
   /rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/chat/interactive/run_prompt_loop_vllm.py \
-  --model-type "${MODEL_TYPE}" \
+  --models "${MODELS}" \
+  --gpu-frac "3_1_8b=0.45,3_2_3b=0.25,3_2_1b=0.15" \
   --prompt-file "${PROMPT_FILE}" \
   --output-dir "${OUTPUT_DIR}" \
   --max-tokens 512 \
   --temperature 0.0 \
   --top-p 1.0 \
+  --max-model-len 4096 \
   --tensor-parallel-size 1
