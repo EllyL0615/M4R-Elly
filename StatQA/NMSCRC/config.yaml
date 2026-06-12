@@ -1,0 +1,56 @@
+# NM-SCRC config — the single place all numeric knobs live.
+# Path ROOTS come from env vars via nmscrc/paths.py; this file holds names/ratios/numbers only.
+# NO absolute paths here.
+
+# ---- split (roots resolved in nmscrc/paths.py) ----
+version: v1                                  # output-file prefix (every generated file is v1_*); override via NMSCRC_VERSION (v2 run -> v2)
+raw_dir: data-full                           # raw-data folder under DATA_ROOT; override per-run via NMSCRC_RAW_DIR (v2: data-full_v2)
+split_name: pool_probe30calibtest70          # = NMSCRC_SPLIT default; 30% probe(train) / 70% calibtest pool
+models: [llama3_2_1b, llama3_2_3b, llama3_1_8b]   # EXACT on-disk strings (3 rungs: weak/mid/strong)
+split_ratio: {probe_train: 30, calibtest: 70}     # setA/setB for the stratified pool split
+split_seed: 42                               # fixed seed for the one-shot stratified pool split
+
+# ---- reps: 100 reps, seeds 0..99 ----
+reps: {n: 100, seed_start: 0}
+rep_split: {calib_frac_of_pool: 0.5}         # per rep: split calibtest pool -> calib/test 50/50
+
+# ---- confidence budget: delta = d1 + dV + dU ----
+delta: {total: 0.1, d1: 0.0333, dV: 0.0333, dU: 0.0334}
+
+# ---- probe (widths read from data: 1b=2048, 3b=3072, 8b=4096; do NOT assert) ----
+probe: {type: linear, epochs: 100, batch_size: 256, lr: 1.0e-3, weight_decay: 1.0e-4,
+        patience: 10, val_ratio: 0.1, use_pos_weight: false, device: cpu}
+
+# ---- grids (same Lambda1 x Lambda2 for all methods) ----
+grids:
+  m1: 80
+  m2_default: 80
+  m2_sweep: [20, 40, 80, 160, 320, 640]      # for exp6 phase transition
+  # mode=quantile: grid points are g-quantiles (lambda1) / pooled-p-quantiles (lambda2), so coverage
+  # and set-size sweep evenly despite probe saturation (g,p concentrate near 1). mode=uniform reverts
+  # to linspace [0,1]. Grids are per-model, derived from the FROZEN pool only (no calib/test leak).
+  lambda1: {n_points: 80, range: [0.0, 1.0], mode: quantile, cov_min: 0.02}
+  lambda2: {n_points: 80, range: [0.0, 1.0], mode: quantile, size_min: 0.0}
+
+# ---- targets ----
+targets:
+  delta_gap: [0.02, 0.05, 0.10]              # alpha = ell* + Delta
+  xi_default: 0.3
+  xi_sweep_coverage: [0.1, 0.2, 0.3, 0.5, 0.7, 0.9]
+  xi_sweep_slope: [0.05, 0.1, 0.2, 0.4, 0.8]   # exp5 xi-slope (log-spaced)
+
+# ---- selector g (DECIDED: max top-method probability; store full p(x) for downstream) ----
+selector: {type: max_prob, store_full_p: true}
+# negative-entropy selector reported ONLY as a single-point robustness check (xi=0.3,
+# alpha=ell*+0.05) on the 3.1-8b rung in section 6.6; NOT a sweep dimension, NOT in head-to-head.
+robustness_neg_entropy: {enabled: true, model: llama3_1_8b, xi: 0.3, delta_gap: 0.05}
+
+# ---- optional sweeps ----
+n_sweep: [1000, 2000, 4000]                  # union-tax / floor (optional)
+fit_ranges:                                  # slope fits — fixed, never hand-tuned
+  exp5_xi: [0.05, 0.8]
+
+# ---- synthetic (Stage 1: exp5-synth anchor, exp9 floor) ----
+synthetic:
+  hard_family: aldirawi_prop1                # one coord mean alpha, rest alpha+delta
+  coupling: rejected_constant_B              # rejected points ell == B

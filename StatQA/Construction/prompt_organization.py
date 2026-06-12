@@ -236,6 +236,8 @@ def prompt_organization(row_index, curr_dataset: str, trick: str)->str:
                 + "\n### Statistical Question: " + refined_question \
                 + "\n### Response: " + PROMPT_RESPONSE
     elif trick == 'methods-only' or trick == 'scrc-methods-only':
+        # NOTE: a standalone, self-contained copy of this methods-only prompt generation
+        # (no dependency on this file) lives in NMSCRC/llm_gen/step0_make_prompts.py.
         relevant_column_headers = extract_scrc_relevant_columns(row_index=row_index)
         relevant_meta_info_list = []
 

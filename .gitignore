@@ -1,0 +1,11 @@
+# Large hidden-state / tensor arrays — kept on the RDS filesystem, NOT versioned.
+# GitHub rejects any file > 100 MB; these run to ~180 MB each. Regenerate via llm_gen/.
+*.npy
+
+# Archived / deprecated material — preserved on disk, not shown on GitHub.
+/StatQA/legacy/
+
+# Python / editor cruft
+**/__pycache__/
+*.pyc
+.ipynb_checkpoints/

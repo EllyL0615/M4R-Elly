@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nmscrc"
+version = "1.0.0"
+description = "Non-Monotone Selective Conformal Risk Control (NM-SCRC) for LLM statistical-method selection"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy",
+    "pandas",
+    "torch",
+    "scikit-learn",
+    "matplotlib",
+    "PyYAML",
+]
+
+[tool.setuptools]
+# Flat layout: the package lives in ./nmscrc with one sub-package (methods).
+packages = ["nmscrc", "nmscrc.methods"]

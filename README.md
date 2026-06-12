@@ -1,211 +1,224 @@
-# CX3 & Batch Job
+# NM-SCRC — Non-Monotone Selective Conformal Risk Control
 
-Start Up
+Distribution-free risk control for a **non-monotone** loss (the F1 loss), combined with a
+**selective** (abstaining) prediction rule. The method is applied to *statistical-method
+selection*: given a data-analysis question, decide **which statistical methods are applicable**,
+with a finite-sample, high-probability guarantee on the F1 risk over the questions the system
+chooses to answer.
 
-1. Connect to Zacalar / Imperial-WPA
+## Overview
 
-2. SSH login to CX3
-   - Method 1: PowerShell (not x86!!)
-     - `ssh yl9422@login-b.cx3.hpc.ic.ac.uk` + pw
-   - Method 2: VSCode local
-     - Terminal (PowerShell) : `ssh yl9422@login-b.cx3.hpc.ic.ac.uk` + pw
-     - JupyterHub Remote File Explorer
-   - Method 3: VSCode remote
-     - Remote-SSH : pw
-     - Terminal (bash home) : `export PS1="[\W]\$ "`
+For each question we read a language model's hidden state, pass it through a **frozen linear
+probe** to obtain per-method probabilities `p(x) ∈ [0,1]^27`, and form a nested prediction set
 
-3. Load env
-
-   ```bash
-   eval "$(~/miniforge3/bin/conda shell.bash hook)"
-   conda activate M4R
-   ```
-
-4. Start new Jupyter Hub session [https://jupyter.cx3.rcs.ic.ac.uk](https://jupyter.cx3.rcs.ic.ac.uk/)
-
-5. Run batch job on Computational Node (instead of Login Node)
-
-   [1] Offline
-
-   (1) PBS(Portable Batch System) script
-
-   > 3 accessible directories:
-   >
-   > - `$HOME` : initial dir
-   >
-   > - `$PBS_O_WORKDIR` : job submission dir
-   > - `$TMPDIR` : temp dir, created by node, on local disk of node, accessible by node only
-
-   ```bash
-   #!/bin/bash									# Interpreter = bash
-   #PBS -l select=1:ncpus=1:mem=1gb			# LIST:nodes:cores:memory
-   #PBS -l walltime=00:01:00					# LIST: max runtime
-   #PBS -N hello_world							# JOB NAME
-   #PBS -o /rds/general/user/yl9422/home/files	# OUTPUT PATH
-   #PBS -e /rds/general/user/yl9422/home/files	# ERROR PATH
-   eval "$(~/miniforge3/bin/conda shell.bash hook)"
-   conda activate M4R
-   source ~/.bashrc
-   source /rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/discord-notif/discord_notif.sh	# Discord Notif
-   
-   cd /rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/first-test-job
-   
-   echo "hi from job echo"
-   
-   python test.py
-   
-   ```
-   
-   (2) Run in Terminal
-   
-   ```bash
-   qsub py_script_job.sh	# submit job
-   # returns unique job ID: `XXXXXX.pbs-7`
-   
-   qstat -u yl9422		# monitor user job
-   # Status(S): Running(R), Queued(Q), Held(H), Error(E)
-   
-   qstat -Q [Queue Name]	# monitor queue
-   
-   qdel XXXXXX.pbs-7		# delete job
-   ```
-   
-   (3) Job Output
-   
-   ​	Output file: `XXXXXXX.pbd-7.OU`
-   
-   ​	Error file: `XXXXXXX.pbd-7.ER`
-   
-   [2] Interactive session (for debugging)
-   
-   ```bash
-   # import ipdb; ipdb.set_trace() in PyScript
-   (M4R) [elly] $ qsub -I -l select=1:ncpus=2:mem=8gb -l walltime=02:00:00
-   [yl9422@cx3-1-4 ~]$ qsub job_script.sh
-   [yl9422@cx3-1-4 ~]$ exit
-   (M4R) [elly]$ 
-   ```
-
-### Shell Commands
-
-paths
-
-```bash
-$ pwd		# print working directory
-$ cd		# go to home dir (or `cd ~`)
-# /rds/general/user/yl9422/home
-$ cd ..		# go to parent dir
-$ cd ../..	# go to grandparent dir
-$ cd -		# go to previous dir
+```
+C_{λ₂}(x) = { method k : p_k(x) ≥ 1 − λ₂ }.
 ```
 
-### Package requitements
+A scalar **selector** `g(x) = maxₖ p_k(x)` decides whether to answer at all: the system *accepts*
+the question when `g(x) ≥ 1 − λ₁` and *abstains* otherwise. The loss on an accepted question is
 
-- Python
-- ipykernel
-- huggingface_hub[cli]
-- requirements.txt in StatQA repo
-- ...
-
-### Resources Requests
-
-| Scenario                        | Recommended Requests                |
-| :------------------------------ | :---------------------------------- |
-| Small Scripts / Data Processing | `select=1:ncpus=2:mem=8gb`          |
-| Download Models                 | `select=1:ncpus=4:mem=32gb`         |
-| API Model (e.g. GPT)            | `select=1:ncpus=4:mem=16gb`         |
-| Local Model (e.g. Llama)        | `select=1:ncpus=8:mem=64gb:ngpus=1` |
-
-
-
-
-
-
-
-# Producing Results
-
-### Add New Models
-
-##### I. Download Models
-
-- [Hugging Face token](https://huggingface.co/settings/tokens)
-
-- Model Folder: /rds/general/user/yl9422/home/files/models
-
-| Model               | Open/Closed source | Desc  |
-| ------------------- | ------------------ | ----- |
-| LLaMA‑2 7B          | Open               | Paper |
-| LLaMA‑2 13B         | Open               | Paper |
-| LLaMA‑3 8B          | Open               | Paper |
-| LLaMA‑3 8B Instruct | Open               | Paper |
-| GPT‑3.5‑Turbo       | Closed             | Paper |
-| GPT‑4               | Closed             | Paper |
-| GPT‑4o              | Closed             | Paper |
-
-1. edit file `MyScripts/download-models/download_models_job.sh`
-
-2. run batch job
-
-   ```bash
-   cd /rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/download-models
-   qsub download_models_job.sh
-   qstat -u yl9422
-   ```
-
-##### II. Edit Model Paths
-
-1. find file `StatQA/Evaluation/llama_evaluation.py`
-
-2. search for `model_path`
-
-3. add / change to
-
-   ```python
-   elif model_type == '2_7b':
-       model_path = "/rds/general/user/yl9422/home/files/models/Llama-2-7b-chat-hf"
-       parallel_num = 1    # we only have 1 GPU
-   ```
-
-### Prompt Organisation (Do not run this for reproduction)
-
-```bash
-cd /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/Script
-sh prompt_organization.sh
+```
+ℓ = 1 − F1( C_{λ₂}(x), Y ),     ℓ = 1 when C = ∅,
 ```
 
-> [!] An error occurred during prompt organization: [Errno 2] No such file or directory: 'Data/Integrated Dataset/Balanced Benchmark/Balanced Benchmark train.csv'
->
-> The code is trying to rebuild the training set from raw data, but the raw data are missing. This step is time and token expensive, and the final processed training set is already provided in StatQA repo, so just use that instead.
+where `Y` is the ground-truth set of applicable methods. F1 is **not monotone** in the set size
+λ₂ — enlarging the set raises recall but eventually hurts precision, so the risk is U-shaped. This
+is exactly what standard monotone conformal-risk-control machinery cannot certify, and what
+NM-SCRC is built to handle. NM-SCRC calibrates `(λ₁, λ₂)` so that the **accepted-region conditional
+risk** `E[ ℓ | g(X) ≥ 1−λ₁ ]` is controlled at a target `α` with confidence `1 − δ`.
 
-OUTPUT: 5 files
+The study uses three model "rungs" (weak → strong): `llama3_2_1b`, `llama3_2_3b`, `llama3_1_8b`,
+and compares NM-SCRC against baselines and against two published alternatives (Xu et al. and
+Aldirawi et al.). See **[METHODS.md](METHODS.md)** for the full protocol, method definitions, and
+certificates.
 
-- `StatQA/Data/Integrated Dataset/Dataset with Prompt/Test Set/` except for zero-shot-CoT
+## Repository structure
 
-### Evaluation
-
-1. edit file `StatQA/Script/llama_exp.sh`
-
-2. run batch job (4hrs)
-
-   ```bash
-   qsub /rds/general/user/yl9422/home/files/M4R-Elly/MyScripts/reproduce-results/llama_exp_job.sh
-   qstat -u yl9422
-   ```
-
-OUTPUT: 5 files per model
-
-- `StatQA/Model Answer/Origin Answer/`
-
-### Analysis
-
-```bash
-cd /rds/general/user/yl9422/home/files/M4R-Elly/StatQA/Script
-sh answer_analysis.sh
+```
+.
+├── README.md              this file
+├── METHODS.md             methodology: protocol, method definitions, losses, certificates
+├── config.yaml            all numeric knobs (splits, grids, targets, confidence budget)
+├── pyproject.toml         package metadata (installable as `nmscrc`)
+├── requirements.txt       exact dependency versions used for the results
+│
+├── nmscrc/                the experiment package (importable library)
+│   ├── paths.py           single point of path resolution (env-overridable roots)
+│   ├── data.py, parser.py, split.py, probe.py     Stage-0 data pipeline + frozen probe
+│   ├── losses.py, judge.py, repeng.py             risk losses, PASS/FAIL/ABSTAIN judging, rep splits
+│   ├── stage0.py, artifacts.py, hashing.py        frozen-artifact build, caching, hash checks
+│   ├── experiments.py, summary.py, results.py     experiment orchestration + result tables
+│   ├── plots.py, synthetic.py, c2.py              figures, synthetic instances, transductive cert
+│   └── methods/           one module per method (see METHODS.md)
+│       ├── nmscrc_i.py, nmscrc_t.py               NM-SCRC inductive / transductive
+│       ├── naive.py, raw.py, rand.py, mono.py     baselines
+│       ├── xu_proxy.py, crcnm_marginal.py         published opponents
+│       └── _engine.py                             shared calibration engine
+│
+├── llm_gen/               upstream data generation (steps 0–1, GPU): raw StatQA → hidden states
+│   ├── step0_make_prompts.py        methods-only prompts   → data/prompts/
+│   ├── step1_hidden_states.py       hidden states + answers → data/data-full/
+│   └── jobs/                         PBS launchers for step1
+│
+├── prompt_console/        optional: interactive vLLM console to eyeball a prompt on all 3 models
+│   ├── run_console.sh, run_prompt_loop_vllm.py
+│   └── prompts/linear_probe.txt, outputs/
+│
+├── notebooks/             experiment drivers (run top-to-bottom; figures render inline)
+│   ├── v1_experiments.ipynb, v2_experiments.ipynb, v3_experiments.ipynb
+│   └── pool.ipynb         build the pool split (concatenate medium + hard)
+│
+├── scripts/
+│   └── make_figs_beautify_v2.py     re-render the publication figures from frozen results
+│
+├── data/                  inputs + frozen Stage-0 artifacts (see "Data layout" below)
+└── results/               per-experiment outputs (*.jsonl), figures, and results reports
 ```
 
-OUTPUT:
+### Versions v1 / v2 / v3
 
-- `StatQA/Model Answer/Processed Answer/`
-- `StatQA/Model Answer/Processed Answer (for task confusion analysis)/`
-- `StatQA/Model Answer/Task Performance/`
-- modif on `StatQA/Model Answer/Original Answer/` except for stats-prompt ones
+The experiment was run three times on three independent data draws (`data-full`, `data-full_v2`,
+`data-full_v3`). Every generated file is prefixed with its version (`v3_…`), so the three runs
+coexist. **v3 is the most recent run.** Each version has its own driver notebook, figure folder
+(`results/v{1,2,3}_figures/`), and results report (`results/v{1,2,3}_RESULTS_REPORT.md`).
+
+## Installation
+
+Python 3.12. From the repository root:
+
+```bash
+pip install -r requirements.txt
+pip install -e .          # makes `import nmscrc` work from anywhere (notebooks/, scripts/)
+```
+
+The editable install is optional if you always launch Jupyter from the repository root (the
+notebooks add the repo root to `sys.path` themselves), but it is the most robust option.
+
+## Running the experiments
+
+The pipeline is six steps. **Steps 0–2 (GPU) regenerate the raw pool data from raw StatQA
+questions and are optional — the frozen `data-full*/` outputs are shipped, so you normally start at
+step 3.** All commands run from the repository root. Every path is resolved by `nmscrc/paths.py`
+(see [Paths and environment](#paths-and-environment)); no absolute path is hard-coded.
+
+**Step 0 — make the methods-only prompts** (CPU, ~1 min). Self-contained (no dependency on the
+StatQA package code; the SCRC prompt template is inlined).
+
+```bash
+python llm_gen/step0_make_prompts.py --set both      # or --set train / --set test
+```
+- **in** — StatQA repo files, resolved from `$STATQA_ROOT` (default: the sibling `StatQA/` dir):
+  `Data/Integrated Dataset/Dataset with Prompt/Training Set/D_train for zero-shot.csv`,
+  `Data/Integrated Dataset/Balanced Benchmark/mini-StatQA.csv`, `Data/Metadata/Column Metadata/*`.
+- **out** — `data/prompts/{D_train, mini-StatQA} for methods-only.csv` (+ `D_train …report.csv`).
+
+**Step 1 — extract hidden states** (GPU node, conda env `M4R_llama3x`, ~2 h 20 for 8B). For each
+prompt: store the final-layer/final-token hidden state and greedily decode the method answer.
+
+```bash
+bash llm_gen/jobs/step1_submit_all.sh                # one PBS job per model; use bash, NOT qsub
+qstat -u yl9422                                       # monitor
+# no-GPU smoke (mock hidden states, 3 rows/split):
+python llm_gen/step1_hidden_states.py --model_type 3_2_1b --mock_inference \
+    --smoke_rows_per_split 3 --hidden_state_dir /tmp/smoke --origin_answer_dir /tmp/smoke
+```
+- **in** — `data/prompts/*` + LLaMA weights at `/rds/.../files/models/Llama-3.{1-8B,2-1B,2-3B}`.
+- **out** — `data/data-full/{model}_{medium,hard}_{data.csv,hs.npy}` for the three rungs
+  `llama3_1_8b`, `llama3_2_1b`, `llama3_2_3b` (split `medium` = D_train block, `hard` = mini-StatQA).
+
+**Step 2 — build the pool split** (CPU). Run `notebooks/pool.ipynb` top-to-bottom.
+- **in** — `data/data-full/{model}_{medium,hard}_*`.
+- **out** — `data/data-full/{model}_pool_{data.csv,hs.npy}` (medium then hard, CSV and `.npy`
+  kept row-aligned). These are exactly the inputs the steps below require.
+
+**Step 3 — check the inputs are present** (resolves and asserts every input file):
+
+```bash
+python -m nmscrc.check_paths
+```
+- **checks** — `{model}_pool_data.csv` + `{model}_pool_hs.npy` (×3 rungs) + `method_columns.json`.
+
+**Step 4 — run a driver notebook** top-to-bottom, e.g. `notebooks/v3_experiments.ipynb`. Stage 0
+(the frozen, hash-checked probe build) and the 100-rep experiments are **cache-aware**: with the
+shipped `results/` populated, the notebook re-uses cached outputs and just renders the figures and
+tables. Set `FORCE` / `FORCE_EXP = True` in the setup cell to recompute from scratch.
+- **out** — `results/<exp>/*.jsonl`, `results/v3_figures/`, `results/v3_RESULTS_REPORT.md`.
+
+**Step 5 — re-render the publication figures** (reads frozen results):
+
+```bash
+python scripts/make_figs_beautify_v2.py
+```
+- **out** — `results/figures_beautify_v2/`.
+
+## Interactive prompt testing (optional)
+
+Before committing to a full step-0/step-1 run, you can eyeball a prompt on all three models
+interactively. `prompt_console/` keeps the three rungs resident on one GPU (vLLM); you edit a
+prompt file, press Enter, and read each model's reply — no reloading between models.
+
+```bash
+# in an interactive GPU session, env M4R_llama3x_vllm (loading the 3 models takes ~5 min):
+qsub -I -l select=1:ncpus=8:mem=64gb:ngpus=1 -l walltime=02:00:00
+eval "$(~/miniforge3/bin/conda shell.bash hook)"
+conda activate M4R_llama3x_vllm
+bash prompt_console/run_console.sh
+```
+
+- **in** — `prompt_console/prompts/linear_probe.txt`. Line 1 **must** be `#model: <name>`
+  (`3_1_8b` / `3_2_3b` / `3_2_1b`); the prompt body follows. Switch model = edit line 1, press Enter.
+- **out** — `prompt_console/outputs/latest_reply.txt` + a timestamped `reply_<model>_<job>_<time>.txt`.
+- Greedy decoding (`temperature=0`). GPU-memory split defaults to `8B=0.45 / 3B=0.25 / 1B=0.15`
+  (~0.85, fits a 46GB L40S); lower `--gpu-frac` / `--max-model-len` on a smaller card.
+
+### Paths and environment
+
+All filesystem paths are resolved in `nmscrc/paths.py` from three environment-overridable roots;
+no absolute path is hard-coded. Run locally with **nothing set** — the roots auto-infer to the
+repository:
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `NMSCRC_ROOT`    | repo root (auto) | project root |
+| `NMSCRC_DATA`    | `<root>/data`    | point at scratch/RDS on a cluster |
+| `NMSCRC_RESULTS` | `<root>/results` | results location |
+| `NMSCRC_SPLIT`   | `pool_probe30calibtest70` | split name |
+| `NMSCRC_RAW_DIR` | `data-full` (config) | raw-data folder (`data-full_v3` for the v3 run) |
+| `NMSCRC_VERSION` | `v1` (config) | output-file prefix |
+| `STATQA_ROOT`    | sibling `StatQA/` (auto) | StatQA repo holding the step-0 raw inputs |
+
+## Configuration
+
+`config.yaml` is the single place every numeric knob is defined: the 30/70 probe/calibtest
+split, the 100 reps, the confidence budget `δ = δ₁ + δ_V + δ_U`, the `Λ₁ × Λ₂` grids, the targets
+`α = ℓ* + Δ` with `Δ ∈ {0.02, 0.05, 0.10}`, and the selector. No numbers are hard-coded in the
+package.
+
+## Data layout
+
+```
+data/
+├── method_columns.json                       ordered 27-method list (id ↔ name)
+├── prompts/          methods-only prompt CSVs (step0 output; input to step1)
+├── data-full/        {model}_pool_data.csv + {model}_pool_hs.npy     (v1 raw pool)
+│                     (+ the {model}_{medium,hard}_* files step1 emits, pooled by pool.ipynb)
+├── data-full_v2/     …                                               (v2 raw pool)
+├── data-full_v3/     …                                               (v3 raw pool)
+├── data-split/pool_probe30calibtest70/        stratified 30/70 split per model
+├── probe-train/pool_probe30calibtest70/       frozen-probe logits, labels, weights (.pt)
+└── artifacts/pool_probe30calibtest70/         loss tensors, grids, hashes (Stage-0 freeze)
+```
+
+Each `_pool_data.csv` carries `task`, `difficulty` (stratification keys), `results` (ground-truth
+applicable methods, used for both probe labels and F1 evaluation), and `model_answer` (the raw LLM
+text, used only by the raw-LLM baseline). The `_pool_hs.npy` files are the row-aligned hidden
+states (width 2048 / 3072 / 4096 for the three rungs).
+
+## Results
+
+- `results/<exp>/*.jsonl` — per-repetition outputs for each experiment (validity, U-shape,
+  ξ-slope, phase transition, inductive-vs-transductive, head-to-head, grid refinement, transductive
+  certificate, synthetic floor / union-tax).
+- `results/v{1,2,3}_figures/` and `results/figures_beautify_v2/` — figures.
+- `results/v{1,2,3}_RESULTS_REPORT.md` — the objective numerical tables for each run.

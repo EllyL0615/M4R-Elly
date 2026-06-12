@@ -1,0 +1,8 @@
+# Exact versions used to produce the results in this repository (Python 3.12.12).
+# torch is the CPU build (the linear probe trains on CPU); install a CUDA build if you prefer.
+numpy==2.4.2
+pandas==3.0.1
+torch==2.10.0
+scikit-learn==1.8.0
+matplotlib==3.10.8
+PyYAML==6.0.3
